@@ -1,0 +1,9 @@
+# No subir archivos de configuración con claves propias
+.env
+.env.*
+!.env.example
+
+# Archivos temporales comunes
+.DS_Store
+Thumbs.db
+*.log
