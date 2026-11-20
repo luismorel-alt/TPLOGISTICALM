@@ -59,6 +59,28 @@ try {
         CONSTRAINT fk_web_order_item_order FOREIGN KEY (order_id) REFERENCES web_orders(id) ON DELETE CASCADE
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
 
+    // Agrega los datos de ruta a bases ya creadas, sin borrar registros.
+    foreach ([
+        'packages' => ['postal_code' => "VARCHAR(8) NOT NULL DEFAULT ''", 'zone' => "VARCHAR(32) NOT NULL DEFAULT 'Sin clasificar'"],
+        'trips' => ['zone' => "VARCHAR(32) NOT NULL DEFAULT 'Sin clasificar'"],
+        'trip_packages' => ['stop_order' => 'INT NOT NULL DEFAULT 0'],
+    ] as $table => $columns) {
+        foreach ($columns as $column => $definition) {
+            $check = $pdo->prepare('SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ? AND COLUMN_NAME = ?');
+            $check->execute([$table, $column]);
+            if (!(int)$check->fetchColumn()) $pdo->exec("ALTER TABLE `$table` ADD COLUMN `$column` $definition");
+        }
+    }
+    $pdo->exec("INSERT INTO vehicles(id,name,category,model,pbv_kg,tare_kg,volume_m3) VALUES
+        ('utilitario-fiorino','Fiat Fiorino','Utilitario pequeño','Fiat Fiorino',0,0,3),
+        ('utilitario-partner','Peugeot Partner','Utilitario mediano','Peugeot Partner',0,0,4),
+        ('utilitario-kangoo','Renault Kangoo','Utilitario mediano','Renault Kangoo',0,0,4),
+        ('furgon-trafic','Renault Trafic','Furgón mediano','Renault Trafic',0,0,8),
+        ('furgon-transit-custom','Ford Transit Custom','Furgón mediano','Ford Transit Custom',0,0,8),
+        ('furgon-sprinter','Mercedes-Benz Sprinter','Furgón grande','Mercedes-Benz Sprinter',0,0,15),
+        ('furgon-daily','Iveco Daily','Furgón grande','Iveco Daily',0,0,19)
+        ON DUPLICATE KEY UPDATE category=VALUES(category), model=VALUES(model), volume_m3=VALUES(volume_m3)");
+
     if (($_GET['resource'] ?? '') === 'orders') {
         if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             $orders = $pdo->query('SELECT id,order_code,first_name,last_name,address_line1,address_line2,city,country,postal_code,total,status,created_at FROM web_orders ORDER BY id DESC')->fetchAll();
@@ -102,19 +124,19 @@ try {
             $v['pbvKg'] = (float)$v['pbv_kg']; $v['tareKg'] = (float)$v['tare_kg']; $v['volumeM3'] = (float)$v['volume_m3'];
             unset($v['pbv_kg'], $v['tare_kg'], $v['volume_m3']);
         } unset($v);
-        $packages = $pdo->query('SELECT code,sender,recipient,origin,destination,description,weight_kg,length_m,width_m,height_m,volume_m3,status,received_at,trip_id FROM packages')->fetchAll();
+        $packages = $pdo->query('SELECT code,sender,recipient,origin,destination,description,weight_kg,length_m,width_m,height_m,volume_m3,status,received_at,trip_id,postal_code,zone FROM packages')->fetchAll();
         $history = $pdo->query('SELECT package_code,status,note,happened_at FROM package_history ORDER BY id DESC')->fetchAll();
         $byCode = [];
         foreach ($history as $item) $byCode[$item['package_code']][] = ['status'=>$item['status'],'note'=>$item['note'],'date'=>date(DATE_ATOM, strtotime($item['happened_at'].' UTC'))];
         foreach ($packages as &$p) {
             $p['weightKg']=(float)$p['weight_kg']; $p['lengthM']=(float)$p['length_m']; $p['widthM']=(float)$p['width_m']; $p['heightM']=(float)$p['height_m']; $p['volumeM3']=(float)$p['volume_m3'];
-            $p['receivedAt']=date(DATE_ATOM, strtotime($p['received_at'].' UTC')); $p['tripId']=$p['trip_id']; $p['history']=$byCode[$p['code']] ?? [];
-            unset($p['weight_kg'],$p['length_m'],$p['width_m'],$p['height_m'],$p['volume_m3'],$p['received_at'],$p['trip_id']);
+            $p['receivedAt']=date(DATE_ATOM, strtotime($p['received_at'].' UTC')); $p['tripId']=$p['trip_id']; $p['postalCode']=$p['postal_code']; $p['zone']=$p['zone']; $p['history']=$byCode[$p['code']] ?? [];
+            unset($p['weight_kg'],$p['length_m'],$p['width_m'],$p['height_m'],$p['volume_m3'],$p['received_at'],$p['trip_id'],$p['postal_code']);
         } unset($p);
-        $trips = $pdo->query('SELECT id,vehicle_id,status,created_at FROM trips')->fetchAll();
+        $trips = $pdo->query('SELECT id,vehicle_id,status,created_at,zone FROM trips')->fetchAll();
         foreach ($trips as &$t) {
-            $stmt=$pdo->prepare('SELECT package_code FROM trip_packages WHERE trip_id=?'); $stmt->execute([$t['id']]);
-            $t['vehicleId']=$t['vehicle_id']; $t['createdAt']=date(DATE_ATOM,strtotime($t['created_at'].' UTC')); $t['packageCodes']=array_column($stmt->fetchAll(),'package_code');
+            $stmt=$pdo->prepare('SELECT package_code,stop_order FROM trip_packages WHERE trip_id=? ORDER BY stop_order,package_code'); $stmt->execute([$t['id']]);
+            $routeRows=$stmt->fetchAll(); $t['vehicleId']=$t['vehicle_id']; $t['createdAt']=date(DATE_ATOM,strtotime($t['created_at'].' UTC')); $t['zone']=$t['zone']; $t['packageCodes']=array_column($routeRows,'package_code'); $t['stopOrders']=array_column($routeRows,'stop_order');
             unset($t['vehicle_id'],$t['created_at']);
         } unset($t);
         respond(['vehicles'=>$vehicles,'packages'=>$packages,'trips'=>$trips]);
@@ -128,15 +150,15 @@ try {
     $pdo->exec('DELETE FROM trip_packages'); $pdo->exec('DELETE FROM trips'); $pdo->exec('DELETE FROM package_history'); $pdo->exec('DELETE FROM packages'); $pdo->exec('DELETE FROM vehicles');
     $vehicleStmt=$pdo->prepare('INSERT INTO vehicles(id,name,category,model,pbv_kg,tare_kg,volume_m3) VALUES(?,?,?,?,?,?,?)');
     foreach ($data['vehicles'] as $v) $vehicleStmt->execute([$v['id'],$v['name'],$v['category']??'',$v['model']??'',$v['pbvKg'],$v['tareKg'],$v['volumeM3']]);
-    $packageStmt=$pdo->prepare('INSERT INTO packages(code,sender,recipient,origin,destination,description,weight_kg,length_m,width_m,height_m,volume_m3,status,received_at,trip_id) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)');
+    $packageStmt=$pdo->prepare('INSERT INTO packages(code,sender,recipient,origin,destination,description,weight_kg,length_m,width_m,height_m,volume_m3,status,received_at,trip_id,postal_code,zone) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)');
     $historyStmt=$pdo->prepare('INSERT INTO package_history(package_code,status,note,happened_at) VALUES(?,?,?,?)');
     foreach ($data['packages'] as $p) {
-        $packageStmt->execute([$p['code'],$p['sender'],$p['recipient'],$p['origin'],$p['destination'],$p['description'],$p['weightKg'],$p['lengthM'],$p['widthM'],$p['heightM'],$p['volumeM3']??($p['lengthM']*$p['widthM']*$p['heightM']),$p['status'],dbDate($p['receivedAt']),$p['tripId']??null]);
+        $packageStmt->execute([$p['code'],$p['sender'],$p['recipient'],$p['origin'],$p['destination'],$p['description'],$p['weightKg'],$p['lengthM'],$p['widthM'],$p['heightM'],$p['volumeM3']??($p['lengthM']*$p['widthM']*$p['heightM']),$p['status'],dbDate($p['receivedAt']),$p['tripId']??null,$p['postalCode']??'', $p['zone']??'Sin clasificar']);
         foreach (($p['history']??[]) as $h) $historyStmt->execute([$p['code'],$h['status'],$h['note']??'',dbDate($h['date'])]);
     }
-    $tripStmt=$pdo->prepare('INSERT INTO trips(id,vehicle_id,status,created_at) VALUES(?,?,?,?)');
-    $joinStmt=$pdo->prepare('INSERT INTO trip_packages(trip_id,package_code) VALUES(?,?)');
-    foreach ($data['trips'] as $t) { $tripStmt->execute([$t['id'],$t['vehicleId'],$t['status'],dbDate($t['createdAt'])]); foreach (($t['packageCodes']??[]) as $code) $joinStmt->execute([$t['id'],$code]); }
+    $tripStmt=$pdo->prepare('INSERT INTO trips(id,vehicle_id,status,created_at,zone) VALUES(?,?,?,?,?)');
+    $joinStmt=$pdo->prepare('INSERT INTO trip_packages(trip_id,package_code,stop_order) VALUES(?,?,?)');
+    foreach ($data['trips'] as $t) { $tripStmt->execute([$t['id'],$t['vehicleId'],$t['status'],dbDate($t['createdAt']),$t['zone']??'Sin clasificar']); foreach (($t['packageCodes']??[]) as $i=>$code) $joinStmt->execute([$t['id'],$code,(int)($t['stopOrders'][$i]??($i+1))]); }
     $pdo->commit();
     respond(['ok'=>true]);
 } catch (Throwable $e) {

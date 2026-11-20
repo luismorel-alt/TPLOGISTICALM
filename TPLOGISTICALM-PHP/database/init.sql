@@ -24,18 +24,22 @@ CREATE TABLE packages (
   volume_m3 DECIMAL(12,4) NOT NULL,
   status VARCHAR(30) NOT NULL,
   received_at DATETIME NOT NULL,
-  trip_id VARCHAR(40) NULL
+  trip_id VARCHAR(40) NULL,
+  postal_code VARCHAR(8) NOT NULL DEFAULT '',
+  zone VARCHAR(32) NOT NULL DEFAULT 'Sin clasificar'
 );
 CREATE TABLE trips (
   id VARCHAR(40) PRIMARY KEY,
   vehicle_id VARCHAR(40) NOT NULL,
   status VARCHAR(30) NOT NULL,
   created_at DATETIME NOT NULL,
+  zone VARCHAR(32) NOT NULL DEFAULT 'Sin clasificar',
   CONSTRAINT fk_trip_vehicle FOREIGN KEY (vehicle_id) REFERENCES vehicles(id)
 );
 CREATE TABLE trip_packages (
   trip_id VARCHAR(40) NOT NULL,
   package_code VARCHAR(40) NOT NULL,
+  stop_order INT NOT NULL DEFAULT 0,
   PRIMARY KEY (trip_id, package_code),
   FOREIGN KEY (trip_id) REFERENCES trips(id) ON DELETE CASCADE,
   FOREIGN KEY (package_code) REFERENCES packages(code) ON DELETE CASCADE
@@ -52,15 +56,22 @@ CREATE TABLE package_history (
 INSERT INTO vehicles VALUES
 ('camion-a','Camión A','Camión liviano','Mercedes Accelo',220000,8000,40),
 ('camion-b','Camión B','Camión liviano','Mercedes Atego',18000,6000,30),
-('camion-c','Camión C','Camión liviano','Mercedes Accelo',26000,9500,50);
-INSERT INTO packages VALUES
-('TLS-261114-A001','Depósito Sur','Sucursal Centro','Buenos Aires','La Plata','Caja A · repuestos',50,1.2,0.8,0.6,0.576,'En depósito','2026-11-14 09:15:00',NULL),
-('TLS-261114-B002','Distribuidora Norte','Comercio San Martín','Buenos Aires','San Martín','Caja B · mercadería',120,2,1,1,2,'En depósito','2026-11-14 10:30:00',NULL),
-('TLS-261114-C003','Taller Central','Cliente particular','Buenos Aires','Avellaneda','Caja C · piezas',10,0.5,0.5,0.5,0.125,'En depósito','2026-11-14 11:10:00',NULL),
-('TLS-261113-D004','Casa del Hogar','Micaela Ruiz','Buenos Aires','Luján','Paquete de muestra',8,0.6,0.5,0.4,0.12,'En viaje','2026-11-13 14:20:00','V-024'),
-('TLS-261112-E005','Librería del Parque','Biblioteca Oeste','Buenos Aires','Moreno','Libros',3,0.3,0.3,0.3,0.027,'Entregado','2026-11-12 08:40:00',NULL);
-INSERT INTO trips VALUES ('V-024','camion-c','En curso','2026-11-13 16:00:00');
-INSERT INTO trip_packages VALUES ('V-024','TLS-261113-D004');
+('camion-c','Camión C','Camión liviano','Mercedes Accelo',26000,9500,50),
+('utilitario-fiorino','Fiat Fiorino','Utilitario pequeño','Fiat Fiorino',0,0,3),
+('utilitario-partner','Peugeot Partner','Utilitario mediano','Peugeot Partner',0,0,4),
+('utilitario-kangoo','Renault Kangoo','Utilitario mediano','Renault Kangoo',0,0,4),
+('furgon-trafic','Renault Trafic','Furgón mediano','Renault Trafic',0,0,8),
+('furgon-transit-custom','Ford Transit Custom','Furgón mediano','Ford Transit Custom',0,0,8),
+('furgon-sprinter','Mercedes-Benz Sprinter','Furgón grande','Mercedes-Benz Sprinter',0,0,15),
+('furgon-daily','Iveco Daily','Furgón grande','Iveco Daily',0,0,19);
+INSERT INTO packages(code,sender,recipient,origin,destination,description,weight_kg,length_m,width_m,height_m,volume_m3,status,received_at,trip_id,postal_code,zone) VALUES
+('TLS-261114-A001','Depósito Sur','Sucursal Centro','Buenos Aires','La Plata','Caja A · repuestos',50,1.2,0.8,0.6,0.576,'En depósito','2026-11-14 09:15:00',NULL,'','Sin clasificar'),
+('TLS-261114-B002','Distribuidora Norte','Comercio San Martín','Buenos Aires','San Martín','Caja B · mercadería',120,2,1,1,2,'En depósito','2026-11-14 10:30:00',NULL,'','Sin clasificar'),
+('TLS-261114-C003','Taller Central','Cliente particular','Buenos Aires','Avellaneda','Caja C · piezas',10,0.5,0.5,0.5,0.125,'En depósito','2026-11-14 11:10:00',NULL,'','Sin clasificar'),
+('TLS-261113-D004','Casa del Hogar','Micaela Ruiz','Buenos Aires','Luján','Paquete de muestra',8,0.6,0.5,0.4,0.12,'En viaje','2026-11-13 14:20:00','V-024','','Sin clasificar'),
+('TLS-261112-E005','Librería del Parque','Biblioteca Oeste','Buenos Aires','Moreno','Libros',3,0.3,0.3,0.3,0.027,'Entregado','2026-11-12 08:40:00',NULL,'','Sin clasificar');
+INSERT INTO trips(id,vehicle_id,status,created_at,zone) VALUES ('V-024','camion-c','En curso','2026-11-13 16:00:00','GBA');
+INSERT INTO trip_packages(trip_id,package_code,stop_order) VALUES ('V-024','TLS-261113-D004',1);
 INSERT INTO package_history (package_code,status,note,happened_at) VALUES
 ('TLS-261114-A001','En depósito','Paquete recibido en origen.','2026-11-14 09:15:00'),
 ('TLS-261114-B002','En depósito','Paquete recibido en origen.','2026-11-14 10:30:00'),

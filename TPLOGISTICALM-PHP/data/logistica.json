@@ -1,49 +1,244 @@
 {
   "vehicles": [
-    { "id": "camion-a", "name": "Camión A", "category": "Camión liviano", "model": "Mercedes Accelo", "pbvKg": 220000, "tareKg": 8000, "volumeM3": 40 },
-    { "id": "camion-b", "name": "Camión B", "category": "Camión liviano", "model": "Mercedes Atego", "pbvKg": 18000, "tareKg": 6000, "volumeM3": 30 },
-    { "id": "camion-c", "name": "Camión C", "category": "Camión liviano", "model": "Mercedes Accelo", "pbvKg": 26000, "tareKg": 9500, "volumeM3": 50 }
+    {
+      "id": "camion-a",
+      "name": "Camión A",
+      "category": "Camión liviano",
+      "model": "Mercedes Accelo",
+      "pbvKg": 220000,
+      "tareKg": 8000,
+      "volumeM3": 40
+    },
+    {
+      "id": "camion-b",
+      "name": "Camión B",
+      "category": "Camión liviano",
+      "model": "Mercedes Atego",
+      "pbvKg": 18000,
+      "tareKg": 6000,
+      "volumeM3": 30
+    },
+    {
+      "id": "camion-c",
+      "name": "Camión C",
+      "category": "Camión liviano",
+      "model": "Mercedes Accelo",
+      "pbvKg": 26000,
+      "tareKg": 9500,
+      "volumeM3": 50
+    },
+    {
+      "id": "utilitario-fiorino",
+      "name": "Fiat Fiorino",
+      "category": "Utilitario pequeño",
+      "model": "Fiat Fiorino",
+      "pbvKg": 0,
+      "tareKg": 0,
+      "volumeM3": 3
+    },
+    {
+      "id": "utilitario-partner",
+      "name": "Peugeot Partner",
+      "category": "Utilitario mediano",
+      "model": "Peugeot Partner",
+      "pbvKg": 0,
+      "tareKg": 0,
+      "volumeM3": 4
+    },
+    {
+      "id": "utilitario-kangoo",
+      "name": "Renault Kangoo",
+      "category": "Utilitario mediano",
+      "model": "Renault Kangoo",
+      "pbvKg": 0,
+      "tareKg": 0,
+      "volumeM3": 4
+    },
+    {
+      "id": "furgon-trafic",
+      "name": "Renault Trafic",
+      "category": "Furgón mediano",
+      "model": "Renault Trafic",
+      "pbvKg": 0,
+      "tareKg": 0,
+      "volumeM3": 8
+    },
+    {
+      "id": "furgon-transit-custom",
+      "name": "Ford Transit Custom",
+      "category": "Furgón mediano",
+      "model": "Ford Transit Custom",
+      "pbvKg": 0,
+      "tareKg": 0,
+      "volumeM3": 8
+    },
+    {
+      "id": "furgon-sprinter",
+      "name": "Mercedes-Benz Sprinter",
+      "category": "Furgón grande",
+      "model": "Mercedes-Benz Sprinter",
+      "pbvKg": 0,
+      "tareKg": 0,
+      "volumeM3": 15
+    },
+    {
+      "id": "furgon-daily",
+      "name": "Iveco Daily",
+      "category": "Furgón grande",
+      "model": "Iveco Daily",
+      "pbvKg": 0,
+      "tareKg": 0,
+      "volumeM3": 19
+    }
   ],
   "packages": [
     {
-      "code": "TLS-261114-A001", "sender": "Depósito Sur", "recipient": "Sucursal Centro", "origin": "Buenos Aires", "destination": "La Plata",
-      "description": "Caja A · repuestos", "weightKg": 50, "lengthM": 1.2, "widthM": 0.8, "heightM": 0.6, "volumeM3": 0.576,
-      "status": "En depósito", "receivedAt": "2026-11-14T09:15:00-03:00",
-      "history": [{ "status": "En depósito", "note": "Paquete recibido en origen.", "date": "2026-11-14T09:15:00-03:00" }]
-    },
-    {
-      "code": "TLS-261114-B002", "sender": "Distribuidora Norte", "recipient": "Comercio San Martín", "origin": "Buenos Aires", "destination": "San Martín",
-      "description": "Caja B · mercadería", "weightKg": 120, "lengthM": 2, "widthM": 1, "heightM": 1, "volumeM3": 2,
-      "status": "En depósito", "receivedAt": "2026-11-14T10:30:00-03:00",
-      "history": [{ "status": "En depósito", "note": "Paquete recibido en origen.", "date": "2026-11-14T10:30:00-03:00" }]
-    },
-    {
-      "code": "TLS-261114-C003", "sender": "Taller Central", "recipient": "Cliente particular", "origin": "Buenos Aires", "destination": "Avellaneda",
-      "description": "Caja C · piezas", "weightKg": 10, "lengthM": 0.5, "widthM": 0.5, "heightM": 0.5, "volumeM3": 0.125,
-      "status": "En depósito", "receivedAt": "2026-11-14T11:10:00-03:00",
-      "history": [{ "status": "En depósito", "note": "Paquete recibido en origen.", "date": "2026-11-14T11:10:00-03:00" }]
-    },
-    {
-      "code": "TLS-261113-D004", "sender": "Casa del Hogar", "recipient": "Micaela Ruiz", "origin": "Buenos Aires", "destination": "Luján",
-      "description": "Paquete de muestra", "weightKg": 8, "lengthM": 0.6, "widthM": 0.5, "heightM": 0.4, "volumeM3": 0.12,
-      "status": "En viaje", "receivedAt": "2026-11-13T14:20:00-03:00", "tripId": "V-024",
+      "code": "TLS-261114-A001",
+      "sender": "Depósito Sur",
+      "recipient": "Sucursal Centro",
+      "origin": "Buenos Aires",
+      "destination": "La Plata",
+      "description": "Caja A · repuestos",
+      "weightKg": 50,
+      "lengthM": 1.2,
+      "widthM": 0.8,
+      "heightM": 0.6,
+      "volumeM3": 0.576,
+      "status": "En depósito",
+      "receivedAt": "2026-11-14T09:15:00-03:00",
       "history": [
-        { "status": "En viaje", "note": "Asignado al viaje V-024 con Camión C.", "date": "2026-11-13T16:00:00-03:00" },
-        { "status": "En depósito", "note": "Paquete recibido en origen.", "date": "2026-11-13T14:20:00-03:00" }
-      ]
+        {
+          "status": "En depósito",
+          "note": "Paquete recibido en origen.",
+          "date": "2026-11-14T09:15:00-03:00"
+        }
+      ],
+      "postalCode": "",
+      "zone": "Sin clasificar"
     },
     {
-      "code": "TLS-261112-E005", "sender": "Librería del Parque", "recipient": "Biblioteca Oeste", "origin": "Buenos Aires", "destination": "Moreno",
-      "description": "Libros", "weightKg": 3, "lengthM": 0.3, "widthM": 0.3, "heightM": 0.3, "volumeM3": 0.027,
-      "status": "Entregado", "receivedAt": "2026-11-12T08:40:00-03:00",
+      "code": "TLS-261114-B002",
+      "sender": "Distribuidora Norte",
+      "recipient": "Comercio San Martín",
+      "origin": "Buenos Aires",
+      "destination": "San Martín",
+      "description": "Caja B · mercadería",
+      "weightKg": 120,
+      "lengthM": 2,
+      "widthM": 1,
+      "heightM": 1,
+      "volumeM3": 2,
+      "status": "En depósito",
+      "receivedAt": "2026-11-14T10:30:00-03:00",
       "history": [
-        { "status": "Entregado", "note": "Entrega confirmada en destino.", "date": "2026-11-12T15:30:00-03:00" },
-        { "status": "En viaje", "note": "Paquete salió a distribución.", "date": "2026-11-12T11:00:00-03:00" },
-        { "status": "En depósito", "note": "Paquete recibido en origen.", "date": "2026-11-12T08:40:00-03:00" }
-      ]
+        {
+          "status": "En depósito",
+          "note": "Paquete recibido en origen.",
+          "date": "2026-11-14T10:30:00-03:00"
+        }
+      ],
+      "postalCode": "",
+      "zone": "Sin clasificar"
+    },
+    {
+      "code": "TLS-261114-C003",
+      "sender": "Taller Central",
+      "recipient": "Cliente particular",
+      "origin": "Buenos Aires",
+      "destination": "Avellaneda",
+      "description": "Caja C · piezas",
+      "weightKg": 10,
+      "lengthM": 0.5,
+      "widthM": 0.5,
+      "heightM": 0.5,
+      "volumeM3": 0.125,
+      "status": "En depósito",
+      "receivedAt": "2026-11-14T11:10:00-03:00",
+      "history": [
+        {
+          "status": "En depósito",
+          "note": "Paquete recibido en origen.",
+          "date": "2026-11-14T11:10:00-03:00"
+        }
+      ],
+      "postalCode": "",
+      "zone": "Sin clasificar"
+    },
+    {
+      "code": "TLS-261113-D004",
+      "sender": "Casa del Hogar",
+      "recipient": "Micaela Ruiz",
+      "origin": "Buenos Aires",
+      "destination": "Luján",
+      "description": "Paquete de muestra",
+      "weightKg": 8,
+      "lengthM": 0.6,
+      "widthM": 0.5,
+      "heightM": 0.4,
+      "volumeM3": 0.12,
+      "status": "En viaje",
+      "receivedAt": "2026-11-13T14:20:00-03:00",
+      "tripId": "V-024",
+      "history": [
+        {
+          "status": "En viaje",
+          "note": "Asignado al viaje V-024 con Camión C.",
+          "date": "2026-11-13T16:00:00-03:00"
+        },
+        {
+          "status": "En depósito",
+          "note": "Paquete recibido en origen.",
+          "date": "2026-11-13T14:20:00-03:00"
+        }
+      ],
+      "postalCode": "",
+      "zone": "Sin clasificar"
+    },
+    {
+      "code": "TLS-261112-E005",
+      "sender": "Librería del Parque",
+      "recipient": "Biblioteca Oeste",
+      "origin": "Buenos Aires",
+      "destination": "Moreno",
+      "description": "Libros",
+      "weightKg": 3,
+      "lengthM": 0.3,
+      "widthM": 0.3,
+      "heightM": 0.3,
+      "volumeM3": 0.027,
+      "status": "Entregado",
+      "receivedAt": "2026-11-12T08:40:00-03:00",
+      "history": [
+        {
+          "status": "Entregado",
+          "note": "Entrega confirmada en destino.",
+          "date": "2026-11-12T15:30:00-03:00"
+        },
+        {
+          "status": "En viaje",
+          "note": "Paquete salió a distribución.",
+          "date": "2026-11-12T11:00:00-03:00"
+        },
+        {
+          "status": "En depósito",
+          "note": "Paquete recibido en origen.",
+          "date": "2026-11-12T08:40:00-03:00"
+        }
+      ],
+      "postalCode": "",
+      "zone": "Sin clasificar"
     }
   ],
   "trips": [
-    { "id": "V-024", "vehicleId": "camion-c", "packageCodes": ["TLS-261113-D004"], "status": "En curso", "createdAt": "2026-11-13T16:00:00-03:00" }
+    {
+      "id": "V-024",
+      "vehicleId": "camion-c",
+      "packageCodes": [
+        "TLS-261113-D004"
+      ],
+      "status": "En curso",
+      "createdAt": "2026-11-13T16:00:00-03:00",
+      "zone": "Sin clasificar"
+    }
   ]
 }

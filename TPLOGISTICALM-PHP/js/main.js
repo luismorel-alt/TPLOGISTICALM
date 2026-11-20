@@ -54,7 +54,7 @@ async function loadState() {
   state.vehicles = initialData.vehicles || [];
   state.packages = initialData.packages || [];
   state.trips = initialData.trips || [];
-  persistState();
+  renderAll();
 }
 
 function packageVolume(parcel) {
@@ -182,7 +182,7 @@ function renderPackages() {
     '<td>' + formatNumber(packageVolume(parcel), 3) + ' m³</td>' +
     '<td>' + formatNumber(parcel.weightKg, 1) + ' kg</td>' +
     '<td>' + statusBadge(parcel.status) + '</td>' +
-    '<td><button class="text-button" type="button" data-track-code="' + escapeHTML(parcel.code) + '">Ver</button></td>' +
+    '<td><button class="text-button" type="button" data-track-code="' + escapeHTML(parcel.code) + '">Ver</button> <button class="text-button" type="button" data-route-code="' + escapeHTML(parcel.code) + '">CPA</button></td>' +
     '</tr>').join('');
   document.querySelector('#packages-empty').hidden = parcels.length > 0;
 }
@@ -201,10 +201,11 @@ function renderDispatchOptions() {
 
 function renderDispatchPackages() {
   const container = document.querySelector('#dispatch-available');
-  const available = state.packages.filter((parcel) => parcel.status === 'En depósito');
+  const zone = document.querySelector('#dispatch-zone').value;
+  const available = state.packages.filter((parcel) => parcel.status === 'En depósito' && parcel.zone === zone && /^[A-Z][0-9]{4}[A-Z]{3}$/i.test(parcel.postalCode || '')).sort((a,b) => String(a.postalCode).localeCompare(String(b.postalCode)) || a.destination.localeCompare(b.destination));
   container.innerHTML = available.map((parcel) => '<label class="package-option">' +
     '<input type="checkbox" data-package-choice value="' + escapeHTML(parcel.code) + '">' +
-    '<span class="package-option__body"><strong>' + escapeHTML(parcel.code) + ' · ' + escapeHTML(parcel.description) + '</strong><span>' + escapeHTML(parcel.destination) + ' · ' + formatNumber(parcel.weightKg, 1) + ' kg · ' + formatNumber(packageVolume(parcel), 3) + ' m³</span></span>' +
+    '<span class="package-option__body"><strong>' + escapeHTML(parcel.code) + ' · ' + escapeHTML(parcel.description) + '</strong><span>' + escapeHTML(parcel.destination) + ' · ' + escapeHTML(parcel.zone) + ' · CPA ' + escapeHTML(parcel.postalCode) + ' · ' + formatNumber(parcel.weightKg, 1) + ' kg · ' + formatNumber(packageVolume(parcel), 3) + ' m³</span></span>' +
     '</label>').join('') || '<p class="empty-state">No hay paquetes listos para despachar.</p>';
 }
 
@@ -219,6 +220,12 @@ function renderCapacity() {
   }
 
   const payload = payloadCapacity(vehicle);
+  if (payload <= 0) {
+    document.querySelector('#vehicle-specs').innerHTML = '<p class="form-note">La planilla informa el volumen, pero no el PBV ni la tara. Cargá esos datos reales antes de usar esta unidad.</p><label class="form-field"><span>PBV (kg)</span><input id="vehicle-pbv" type="number" min="1" step="1"></label><label class="form-field"><span>Tara (kg)</span><input id="vehicle-tare" type="number" min="1" step="1"></label><button class="button button--secondary" id="save-vehicle-capacity" type="button">Guardar capacidad real</button>';
+    document.querySelector('#capacity-message').textContent = 'Esta unidad necesita PBV y tara reales para habilitar el despacho.';
+    createButton.disabled = true;
+    return;
+  }
   const current = activeLoad(vehicle.id);
   const chosen = selectedPackages().reduce((load, parcel) => {
     load.weightKg += Number(parcel.weightKg) || 0;
@@ -258,6 +265,20 @@ function renderCapacity() {
   createButton.disabled = !hasSelection || !withinLimits;
 }
 
+function renderRouteSheets() {
+  const container = document.querySelector('#route-sheets');
+  if (!container) return;
+  const trips = state.trips.filter((trip) => trip.packageCodes?.length);
+  container.innerHTML = trips.map((trip) => {
+    const vehicle = state.vehicles.find((item) => item.id === trip.vehicleId);
+    const parcels = tripPackages(trip).sort((a,b) => String(a.postalCode).localeCompare(String(b.postalCode)) || a.destination.localeCompare(b.destination));
+    const weight = parcels.reduce((sum,p) => sum + Number(p.weightKg || 0),0);
+    const volume = parcels.reduce((sum,p) => sum + packageVolume(p),0);
+    const rows = parcels.map((p,i) => '<tr><td>' + (i+1) + '</td><td>' + escapeHTML(p.code) + '</td><td>' + escapeHTML(p.destination) + '</td><td>' + escapeHTML(p.zone) + '</td><td>' + escapeHTML(p.postalCode || 'Sin CPA') + '</td><td>' + formatNumber(p.weightKg,1) + ' kg</td><td>' + formatNumber(packageVolume(p),3) + ' m³</td></tr>').join('');
+    return '<article class="panel-card"><div class="panel-card__header"><div><p class="eyebrow">' + escapeHTML(trip.zone || 'Sin clasificar') + ' · ' + escapeHTML(trip.status) + '</p><h2>Viaje ' + escapeHTML(trip.id) + ' · ' + escapeHTML(vehicle?.name || 'Unidad') + '</h2><p>Orden de referencia por CPA (no optimiza calles ni tráfico).</p></div><strong>' + formatDate(trip.createdAt) + '</strong></div><div class="fleet-item__detail"><span>' + formatNumber(weight,1) + ' / ' + formatNumber(payloadCapacity(vehicle || {}),0) + ' kg</span><span>' + formatNumber(volume,3) + ' / ' + formatNumber(vehicle?.volumeM3,1) + ' m³</span></div><div class="table-wrap"><table class="data-table"><thead><tr><th>Parada</th><th>Paquete</th><th>Destino</th><th>Zona</th><th>CPA</th><th>Peso</th><th>Volumen</th></tr></thead><tbody>' + rows + '</tbody></table></div></article>';
+  }).join('') || '<section class="panel-card"><p class="empty-state">Todavía no hay viajes con paquetes asignados.</p></section>';
+}
+
 function renderAll() {
   renderMetrics();
   renderRecentPackages();
@@ -267,6 +288,7 @@ function renderAll() {
   renderDispatchPackages();
   renderCapacity();
   renderOrders();
+  renderRouteSheets();
 }
 
 function switchView(name, focusHeading = true) {
@@ -311,6 +333,8 @@ function createPackage(form) {
     recipient: values.recipient.trim(),
     origin: values.origin.trim(),
     destination: values.destination.trim(),
+    postalCode: values.postalCode.trim().toUpperCase(),
+    zone: values.zone,
     description: values.description.trim(),
     weightKg: Number(values.weightKg),
     lengthM: Number(values.lengthM),
@@ -336,6 +360,7 @@ function createTrip() {
   const vehicle = state.vehicles.find((item) => item.id === document.querySelector('#dispatch-vehicle').value);
   const parcels = selectedPackages();
   if (!vehicle || parcels.length === 0) return;
+  if (parcels.some((parcel) => parcel.zone !== document.querySelector('#dispatch-zone').value || !/^[A-Z][0-9]{4}[A-Z]{3}$/i.test(parcel.postalCode || ''))) { notify('Todos los paquetes deben tener CPA válido y pertenecer a la zona seleccionada.', 'error'); return; }
   const load = activeLoad(vehicle.id);
   const newWeight = parcels.reduce((sum, parcel) => sum + Number(parcel.weightKg), 0);
   const newVolume = parcels.reduce((sum, parcel) => sum + packageVolume(parcel), 0);
@@ -347,7 +372,9 @@ function createTrip() {
   const trip = {
     id: 'V-' + String(25 + state.trips.length).padStart(3, '0'),
     vehicleId: vehicle.id,
-    packageCodes: parcels.map((parcel) => parcel.code),
+    packageCodes: [...parcels].sort((a,b) => String(a.postalCode).localeCompare(String(b.postalCode)) || a.destination.localeCompare(b.destination)).map((parcel) => parcel.code),
+    stopOrders: [...parcels].sort((a,b) => String(a.postalCode).localeCompare(String(b.postalCode)) || a.destination.localeCompare(b.destination)).map((_,i) => i + 1),
+    zone: document.querySelector('#dispatch-zone').value,
     status: 'En curso',
     createdAt: todayISO(),
   };
@@ -418,6 +445,21 @@ function bindEvents() {
       switchView(viewButton.dataset.view);
       return;
     }
+    const routeButton = event.target.closest('[data-route-code]');
+    if (routeButton) {
+      const parcel = state.packages.find((item) => item.code === routeButton.dataset.routeCode);
+      if (!parcel || parcel.status !== 'En depósito') { notify('La zona y el CPA se editan antes del despacho.', 'error'); return; }
+      const zone = window.prompt('Zona del envío: CABA, GBA o Interior', parcel.zone === 'Sin clasificar' ? 'GBA' : parcel.zone);
+      if (zone === null) return;
+      const normalizedZone = zone.trim().toUpperCase();
+      if (!['CABA','GBA','INTERIOR'].includes(normalizedZone)) { notify('Ingresá CABA, GBA o Interior.', 'error'); return; }
+      const postalCode = window.prompt('CPA alfanumérico de 8 caracteres', parcel.postalCode || '');
+      if (postalCode === null) return;
+      const normalizedPostalCode = postalCode.trim().toUpperCase();
+      if (!/^[A-Z][0-9]{4}[A-Z]{3}$/.test(normalizedPostalCode)) { notify('Ingresá un CPA de 8 caracteres: letra, cuatro números y tres letras.', 'error'); return; }
+      parcel.zone = normalizedZone === 'INTERIOR' ? 'Interior' : normalizedZone; parcel.postalCode = normalizedPostalCode;
+      persistState(); renderAll(); notify('Zona y CPA guardados para ' + parcel.code + '.'); return;
+    }
     if (event.target.closest('[data-open-package]')) {
       if (typeof app.packageDialog.showModal === 'function') app.packageDialog.showModal();
       return;
@@ -450,6 +492,14 @@ function bindEvents() {
   document.querySelector('#status-filter').addEventListener('change', renderPackages);
   document.querySelector('#dispatch-vehicle').addEventListener('change', renderCapacity);
   document.querySelector('#dispatch-available').addEventListener('change', renderCapacity);
+  document.querySelector('#dispatch-zone').addEventListener('change', () => { renderDispatchPackages(); renderCapacity(); });
+  document.querySelector('#vehicle-specs').addEventListener('click', (event) => {
+    if (event.target.id !== 'save-vehicle-capacity') return;
+    const vehicle = state.vehicles.find((item) => item.id === document.querySelector('#dispatch-vehicle').value);
+    const pbv = Number(document.querySelector('#vehicle-pbv').value); const tare = Number(document.querySelector('#vehicle-tare').value);
+    if (!vehicle || pbv <= tare || tare <= 0) { notify('Ingresá un PBV mayor que la tara y una tara real.', 'error'); return; }
+    vehicle.pbvKg = pbv; vehicle.tareKg = tare; persistState(); renderAll(); notify('Capacidad guardada para ' + vehicle.name + '.');
+  });
   document.querySelector('#package-form').addEventListener('submit', (event) => {
     event.preventDefault();
     if (event.currentTarget.reportValidity()) createPackage(event.currentTarget);

@@ -1,121 +1,660 @@
 <!doctype html>
 <html lang="es">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#101a2c">
-  <meta name="description" content="Proyecto educativo para organizar paquetes, viajes y seguimiento de entregas.">
-  <title>TP LOGISTICALM | Operaciones logísticas</title>
-  <link rel="stylesheet" href="./css/styles.css">
-  <script src="./js/main.js" defer></script>
-</head>
-<body>
-  <a class="skip-link" href="#main-content">Saltar al contenido principal</a>
-  <div class="app-shell">
-    <button class="menu-backdrop" type="button" aria-label="Cerrar el menú"></button>
-    <aside class="sidebar" aria-label="Navegación principal">
-      <a class="brand" href="#panel" data-view="panel" aria-label="TP LOGISTICALM, ir al resumen">
-        <span class="brand__mark" aria-hidden="true">LM</span>
-        <span class="brand__text">TP LOGISTICALM<span class="brand__caption">Operaciones logísticas</span></span>
-      </a>
-      <p class="sidebar__label">MENÚ PRINCIPAL</p>
-      <nav class="nav-list" aria-label="Secciones">
-        <button class="nav-link is-active" type="button" data-view="panel" aria-current="page"><span class="nav-link__icon" aria-hidden="true">▦</span>Resumen</button>
-        <button class="nav-link" type="button" data-view="paquetes"><span class="nav-link__icon" aria-hidden="true">□</span>Paquetes</button>
-        <button class="nav-link" type="button" data-view="pedidos"><span class="nav-link__icon" aria-hidden="true">▤</span>Pedidos web</button>
-        <button class="nav-link" type="button" data-view="despacho"><span class="nav-link__icon" aria-hidden="true">⇢</span>Despacho</button>
-        <button class="nav-link" type="button" data-view="seguimiento"><span class="nav-link__icon" aria-hidden="true">⌕</span>Seguimiento</button>
-      </nav>
-      <div class="sidebar__footer"><span class="status-dot" aria-hidden="true"></span><span>Demo académica<span class="sidebar__caption">Datos guardados en este navegador</span></span></div>
-    </aside>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#101a2c" />
+    <meta
+      name="description"
+      content="Proyecto educativo para organizar paquetes, viajes y seguimiento de entregas."
+    />
+    <title>TP LOGISTICALM | Operaciones logísticas</title>
+    <link rel="stylesheet" href="./css/styles.css" />
+    <script src="./js/main.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Saltar al contenido principal</a>
+    <div class="app-shell">
+      <button
+        class="menu-backdrop"
+        type="button"
+        aria-label="Cerrar el menú"
+      ></button>
 
-    <div class="workspace">
-      <header class="topbar">
-        <button class="icon-button mobile-menu" id="menu-toggle" type="button" aria-label="Abrir menú" aria-expanded="false"><span aria-hidden="true">☰</span></button>
-        <div class="topbar__context"><span>LOGÍSTICA</span><span class="topbar__divider" aria-hidden="true">/</span><span>Centro de operaciones</span></div>
-        <div class="topbar__right"><span class="topbar__date" id="today-label"></span><span class="avatar" aria-label="Usuario de demostración">LM</span></div>
-      </header>
+      <aside class="sidebar" aria-label="Navegación principal">
+        <a
+          class="brand"
+          href="#panel"
+          data-view="panel"
+          aria-label="TP LOGISTICALM, ir al resumen"
+        >
+          <!-- span class="brand__mark" aria-hidden="true">LM</span> -->
+          <img
+            class="brand__logo"
+            src="./img/PollosDeCharlie.jpeg"
+            alt="Logo Pollos de Charlie"
+          />
+          <span class="brand__text"
+            >TP LOGISTICALM<span class="brand__caption"
+              >Operaciones logísticas</span
+            ></span
+          >
+        </a>
+        <p class="sidebar__label">MENÚ PRINCIPAL</p>
+        <nav class="nav-list" aria-label="Secciones">
+          <button
+            class="nav-link is-active"
+            type="button"
+            data-view="panel"
+            aria-current="page"
+          >
+            <span class="nav-link__icon" aria-hidden="true">▦</span>Resumen
+          </button>
+          <button class="nav-link" type="button" data-view="paquetes">
+            <span class="nav-link__icon" aria-hidden="true">□</span>Paquetes
+          </button>
+          <button class="nav-link" type="button" data-view="pedidos">
+            <span class="nav-link__icon" aria-hidden="true">▤</span>Pedidos web
+          </button>
+          <button class="nav-link" type="button" data-view="despacho">
+            <span class="nav-link__icon" aria-hidden="true">⇢</span>Despacho
+          </button>
+          <button class="nav-link" type="button" data-view="rutas">
+            <span class="nav-link__icon" aria-hidden="true">☷</span>Hojas de
+            ruta
+          </button>
+          <button class="nav-link" type="button" data-view="seguimiento">
+            <span class="nav-link__icon" aria-hidden="true">⌕</span>Seguimiento
+          </button>
+        </nav>
+        <div class="sidebar__footer">
+          <span class="status-dot" aria-hidden="true"></span
+          ><span
+            >Demo académica<span class="sidebar__caption"
+              >Datos guardados en MariaDB</span
+            ></span
+          >
+        </div>
+      </aside>
 
-      <main class="main-content" id="main-content" tabindex="-1">
-        <div class="notice" id="app-notice" role="status" aria-live="polite" hidden></div>
-        <section class="page-view is-visible" data-page="panel" aria-labelledby="panel-title">
-          <header class="page-header">
-            <div><p class="eyebrow">VISTA GENERAL</p><h1 id="panel-title" tabindex="-1">Panel de operaciones</h1><p class="page-header__text">Un vistazo al estado de los envíos y la flota.</p></div>
-            <button class="button button--primary" type="button" data-open-package><span aria-hidden="true">＋</span> Nuevo paquete</button>
-          </header>
-          <div class="metric-grid" aria-label="Indicadores de logística">
-            <article class="metric-card"><div class="metric-card__top"><span>En depósito</span><span class="metric-icon metric-icon--amber" aria-hidden="true">□</span></div><p class="metric-card__value" id="metric-pending">—</p><p class="metric-card__hint">Listos para despachar</p></article>
-            <article class="metric-card"><div class="metric-card__top"><span>En viaje</span><span class="metric-icon metric-icon--blue" aria-hidden="true">⇢</span></div><p class="metric-card__value" id="metric-transit">—</p><p class="metric-card__hint">Paquetes en distribución</p></article>
-            <article class="metric-card"><div class="metric-card__top"><span>Entregados</span><span class="metric-icon metric-icon--green" aria-hidden="true">✓</span></div><p class="metric-card__value" id="metric-delivered">—</p><p class="metric-card__hint">En el registro de muestra</p></article>
-            <article class="metric-card"><div class="metric-card__top"><span>Vehículos</span><span class="metric-icon metric-icon--violet" aria-hidden="true">▰</span></div><p class="metric-card__value" id="metric-vehicles">—</p><p class="metric-card__hint">Disponibles para asignar</p></article>
+      <div class="workspace">
+        <header class="topbar">
+          <button
+            class="icon-button mobile-menu"
+            id="menu-toggle"
+            type="button"
+            aria-label="Abrir menú"
+            aria-expanded="false"
+          >
+            <span aria-hidden="true">☰</span>
+          </button>
+          <div class="topbar__context">
+            <span>LOGÍSTICA</span
+            ><span class="topbar__divider" aria-hidden="true">/</span
+            ><span>Centro de operaciones</span>
           </div>
-          <div class="dashboard-grid">
-            <section class="panel-card" aria-labelledby="recent-title">
-              <div class="panel-card__header"><div><h2 id="recent-title">Paquetes recientes</h2><p>Movimientos más nuevos</p></div><button class="text-button" type="button" data-view="paquetes">Ver todos <span aria-hidden="true">→</span></button></div>
-              <div class="table-wrap"><table class="data-table"><caption class="sr-only">Últimos paquetes registrados</caption><thead><tr><th scope="col">Código</th><th scope="col">Destino</th><th scope="col">Estado</th><th scope="col">Peso</th></tr></thead><tbody id="recent-packages"></tbody></table></div>
-              <p class="empty-state" id="recent-empty" hidden>Todavía no hay paquetes. Registrá el primero.</p>
-            </section>
-            <section class="panel-card" aria-labelledby="fleet-title">
-              <div class="panel-card__header"><div><h2 id="fleet-title">Uso de la flota</h2><p>Capacidad ocupada por viajes activos</p></div><span class="panel-card__badge">EN VIVO</span></div>
-              <div class="fleet-list" id="fleet-overview"></div>
-            </section>
+          <div class="topbar__right">
+            <span class="topbar__date" id="today-label"></span
+            ><span class="avatar" aria-label="Usuario de demostración">LM</span>
           </div>
-          <section class="tip-card"><span class="tip-card__icon" aria-hidden="true">i</span><div><h2>¿Cómo calcula la capacidad?</h2><p>La carga útil se calcula restando la tara al peso bruto vehicular (PBV). Un despacho es válido solo si respeta el límite de peso y el de volumen del vehículo.</p></div><button class="text-button" type="button" data-view="despacho">Ir a despacho <span aria-hidden="true">→</span></button></section>
-        </section>
+        </header>
 
-        <section class="page-view" data-page="paquetes" aria-labelledby="packages-title" hidden>
-          <header class="page-header"><div><p class="eyebrow">REGISTRO</p><h1 id="packages-title" tabindex="-1">Paquetes</h1><p class="page-header__text">Buscá, filtrá y consultá los envíos de la operación.</p></div><button class="button button--primary" type="button" data-open-package><span aria-hidden="true">＋</span> Nuevo paquete</button></header>
-          <section class="panel-card" aria-label="Listado de paquetes">
-            <div class="filter-bar"><label class="search-field"><span class="sr-only">Buscar paquete</span><span aria-hidden="true">⌕</span><input id="package-search" type="search" placeholder="Código, destinatario o destino" autocomplete="off"></label><label class="select-field"><span class="sr-only">Filtrar por estado</span><select id="status-filter"><option value="todos">Todos los estados</option><option value="En depósito">En depósito</option><option value="En viaje">En viaje</option><option value="Entregado">Entregado</option></select></label><span class="result-count" id="package-count"></span></div>
-            <div class="table-wrap"><table class="data-table"><caption class="sr-only">Todos los paquetes</caption><thead><tr><th scope="col">Código</th><th scope="col">Destinatario</th><th scope="col">Destino</th><th scope="col">Dimensiones</th><th scope="col">Volumen</th><th scope="col">Peso</th><th scope="col">Estado</th><th scope="col"><span class="sr-only">Acción</span></th></tr></thead><tbody id="package-rows"></tbody></table></div>
-            <p class="empty-state" id="packages-empty" hidden>No encontramos paquetes con esos filtros.</p>
+        <main class="main-content" id="main-content" tabindex="-1">
+          <div
+            class="notice"
+            id="app-notice"
+            role="status"
+            aria-live="polite"
+            hidden
+          ></div>
+          <section
+            class="page-view is-visible"
+            data-page="panel"
+            aria-labelledby="panel-title"
+          >
+            <header class="page-header">
+              <div>
+                <p class="eyebrow">VISTA GENERAL</p>
+                <h1 id="panel-title" tabindex="-1">Panel de operaciones</h1>
+                <p class="page-header__text">
+                  Un vistazo al estado de los envíos y la flota.
+                </p>
+              </div>
+              <button
+                class="button button--primary"
+                type="button"
+                data-open-package
+              >
+                <span aria-hidden="true">＋</span> Nuevo paquete
+              </button>
+            </header>
+            <div class="metric-grid" aria-label="Indicadores de logística">
+              <article class="metric-card">
+                <div class="metric-card__top">
+                  <span>En depósito</span
+                  ><span
+                    class="metric-icon metric-icon--amber"
+                    aria-hidden="true"
+                    >□</span
+                  >
+                </div>
+                <p class="metric-card__value" id="metric-pending">—</p>
+                <p class="metric-card__hint">Listos para despachar</p>
+              </article>
+              <article class="metric-card">
+                <div class="metric-card__top">
+                  <span>En viaje</span
+                  ><span
+                    class="metric-icon metric-icon--blue"
+                    aria-hidden="true"
+                    >⇢</span
+                  >
+                </div>
+                <p class="metric-card__value" id="metric-transit">—</p>
+                <p class="metric-card__hint">Paquetes en distribución</p>
+              </article>
+              <article class="metric-card">
+                <div class="metric-card__top">
+                  <span>Entregados</span
+                  ><span
+                    class="metric-icon metric-icon--green"
+                    aria-hidden="true"
+                    >✓</span
+                  >
+                </div>
+                <p class="metric-card__value" id="metric-delivered">—</p>
+                <p class="metric-card__hint">En el registro de muestra</p>
+              </article>
+              <article class="metric-card">
+                <div class="metric-card__top">
+                  <span>Vehículos</span
+                  ><span
+                    class="metric-icon metric-icon--violet"
+                    aria-hidden="true"
+                    >▰</span
+                  >
+                </div>
+                <p class="metric-card__value" id="metric-vehicles">—</p>
+                <p class="metric-card__hint">Disponibles para asignar</p>
+              </article>
+            </div>
+            <div class="dashboard-grid">
+              <section class="panel-card" aria-labelledby="recent-title">
+                <div class="panel-card__header">
+                  <div>
+                    <h2 id="recent-title">Paquetes recientes</h2>
+                    <p>Movimientos más nuevos</p>
+                  </div>
+                  <button
+                    class="text-button"
+                    type="button"
+                    data-view="paquetes"
+                  >
+                    Ver todos <span aria-hidden="true">→</span>
+                  </button>
+                </div>
+                <div class="table-wrap">
+                  <table class="data-table">
+                    <caption class="sr-only">
+                      Últimos paquetes registrados
+                    </caption>
+                    <thead>
+                      <tr>
+                        <th scope="col">Código</th>
+                        <th scope="col">Destino</th>
+                        <th scope="col">Estado</th>
+                        <th scope="col">Peso</th>
+                      </tr>
+                    </thead>
+                    <tbody id="recent-packages"></tbody>
+                  </table>
+                </div>
+                <p class="empty-state" id="recent-empty" hidden>
+                  Todavía no hay paquetes. Registrá el primero.
+                </p>
+              </section>
+              <section class="panel-card" aria-labelledby="fleet-title">
+                <div class="panel-card__header">
+                  <div>
+                    <h2 id="fleet-title">Uso de la flota</h2>
+                    <p>Capacidad ocupada por viajes activos</p>
+                  </div>
+                  <span class="panel-card__badge">EN VIVO</span>
+                </div>
+                <div class="fleet-list" id="fleet-overview"></div>
+              </section>
+            </div>
+            <section class="tip-card">
+              <span class="tip-card__icon" aria-hidden="true">i</span>
+              <div>
+                <h2>¿Cómo calcula la capacidad?</h2>
+                <p>
+                  La carga útil se calcula restando la tara al peso bruto
+                  vehicular (PBV). Un despacho es válido solo si respeta el
+                  límite de peso y el de volumen del vehículo.
+                </p>
+              </div>
+              <button class="text-button" type="button" data-view="despacho">
+                Ir a despacho <span aria-hidden="true">→</span>
+              </button>
+            </section>
           </section>
-        </section>
 
-        <section class="page-view" data-page="pedidos" aria-labelledby="orders-title" hidden>
-          <header class="page-header">
-            <div><p class="eyebrow">TIENDA TPLM</p><h1 id="orders-title" tabindex="-1">Pedidos web</h1><p class="page-header__text">Compras enviadas desde el formulario de la tienda.</p></div>
-            <button class="button button--secondary" id="refresh-orders" type="button">Actualizar pedidos</button>
-          </header>
-          <div class="orders-list" id="web-orders-list" aria-live="polite"><p class="empty-state">Cargando pedidos…</p></div>
-          <p class="form-note">Los pedidos recibidos quedan pendientes de preparación. Para despacharlos, registrá el peso y las medidas reales del paquete.</p>
-        </section>
+          <section
+            class="page-view"
+            data-page="paquetes"
+            aria-labelledby="packages-title"
+            hidden
+          >
+            <header class="page-header">
+              <div>
+                <p class="eyebrow">REGISTRO</p>
+                <h1 id="packages-title" tabindex="-1">Paquetes</h1>
+                <p class="page-header__text">
+                  Buscá, filtrá y consultá los envíos de la operación.
+                </p>
+              </div>
+              <button
+                class="button button--primary"
+                type="button"
+                data-open-package
+              >
+                <span aria-hidden="true">＋</span> Nuevo paquete
+              </button>
+            </header>
+            <section class="panel-card" aria-label="Listado de paquetes">
+              <div class="filter-bar">
+                <label class="search-field"
+                  ><span class="sr-only">Buscar paquete</span
+                  ><span aria-hidden="true">⌕</span
+                  ><input
+                    id="package-search"
+                    type="search"
+                    placeholder="Código, destinatario o destino"
+                    autocomplete="off" /></label
+                ><label class="select-field"
+                  ><span class="sr-only">Filtrar por estado</span
+                  ><select id="status-filter">
+                    <option value="todos">Todos los estados</option>
+                    <option value="En depósito">En depósito</option>
+                    <option value="En viaje">En viaje</option>
+                    <option value="Entregado">Entregado</option>
+                  </select></label
+                ><span class="result-count" id="package-count"></span>
+              </div>
+              <div class="table-wrap">
+                <table class="data-table">
+                  <caption class="sr-only">
+                    Todos los paquetes
+                  </caption>
+                  <thead>
+                    <tr>
+                      <th scope="col">Código</th>
+                      <th scope="col">Destinatario</th>
+                      <th scope="col">Destino</th>
+                      <th scope="col">Dimensiones</th>
+                      <th scope="col">Volumen</th>
+                      <th scope="col">Peso</th>
+                      <th scope="col">Estado</th>
+                      <th scope="col"><span class="sr-only">Acción</span></th>
+                    </tr>
+                  </thead>
+                  <tbody id="package-rows"></tbody>
+                </table>
+              </div>
+              <p class="empty-state" id="packages-empty" hidden>
+                No encontramos paquetes con esos filtros.
+              </p>
+            </section>
+          </section>
 
-        <section class="page-view" data-page="despacho" aria-labelledby="dispatch-title" hidden>
-          <header class="page-header"><div><p class="eyebrow">ARMADO DE VIAJE</p><h1 id="dispatch-title" tabindex="-1">Despacho</h1><p class="page-header__text">Elegí un vehículo y asigná paquetes sin superar su capacidad.</p></div></header>
-          <div class="dispatch-grid">
-            <section class="panel-card" aria-labelledby="vehicle-select-title"><div class="panel-card__header"><div><h2 id="vehicle-select-title">1. Seleccionar vehículo</h2><p>La carga útil es PBV menos tara.</p></div><span class="step-number">01</span></div><label class="form-field"><span>Vehículo</span><select id="dispatch-vehicle" required></select></label><div id="vehicle-specs" class="vehicle-specs"></div></section>
-            <section class="panel-card" aria-labelledby="available-title"><div class="panel-card__header"><div><h2 id="available-title">2. Paquetes en depósito</h2><p>Seleccioná los paquetes para el viaje.</p></div><span class="step-number">02</span></div><div class="dispatch-packages" id="dispatch-available"></div></section>
-          </div>
-          <section class="panel-card capacity-card" aria-labelledby="capacity-title"><div class="panel-card__header"><div><h2 id="capacity-title">Capacidad del viaje</h2><p>La carga actual y los paquetes elegidos se suman antes de confirmar.</p></div><span class="capacity-state" id="capacity-state">Pendiente</span></div><div class="capacity-grid"><div class="capacity-meter"><div class="capacity-meter__heading"><span>Peso</span><span id="dispatch-weight-text">—</span></div><progress id="weight-progress" value="0" max="100" aria-label="Porcentaje de carga de peso"></progress></div><div class="capacity-meter"><div class="capacity-meter__heading"><span>Volumen</span><span id="dispatch-volume-text">—</span></div><progress id="volume-progress" value="0" max="100" aria-label="Porcentaje de carga de volumen"></progress></div></div><p class="capacity-message" id="capacity-message">Elegí un vehículo y al menos un paquete.</p><form id="dispatch-form"><button class="button button--primary" id="create-trip" type="submit" disabled>Crear viaje</button></form></section>
-        </section>
+          <section
+            class="page-view"
+            data-page="pedidos"
+            aria-labelledby="orders-title"
+            hidden
+          >
+            <header class="page-header">
+              <div>
+                <p class="eyebrow">TIENDA TPLM</p>
+                <h1 id="orders-title" tabindex="-1">Pedidos web</h1>
+                <p class="page-header__text">
+                  Compras enviadas desde el formulario de la tienda.
+                </p>
+              </div>
+              <button
+                class="button button--secondary"
+                id="refresh-orders"
+                type="button"
+              >
+                Actualizar pedidos
+              </button>
+            </header>
+            <div class="orders-list" id="web-orders-list" aria-live="polite">
+              <p class="empty-state">Cargando pedidos…</p>
+            </div>
+            <p class="form-note">
+              Los pedidos recibidos quedan pendientes de preparación. Para
+              despacharlos, registrá el peso y las medidas reales del paquete.
+            </p>
+          </section>
 
-        <section class="page-view" data-page="seguimiento" aria-labelledby="tracking-title" hidden>
-          <header class="page-header"><div><p class="eyebrow">CONSULTA DE ENVÍOS</p><h1 id="tracking-title" tabindex="-1">Seguimiento</h1><p class="page-header__text">Ingresá el código para ver el recorrido del paquete.</p></div></header>
-          <section class="tracking-search panel-card"><form id="tracking-form"><label class="form-field"><span>Código de seguimiento</span><input id="tracking-code" name="codigo" type="search" placeholder="Ej.: TLS-261114-A001" autocomplete="off" required></label><button class="button button--primary" type="submit">Consultar <span aria-hidden="true">→</span></button></form><p class="tracking-search__hint">Probá con un código de la tabla de paquetes.</p></section>
-          <div id="tracking-result" class="tracking-result" aria-live="polite" aria-atomic="true"></div>
-        </section>
-      </main>
-      <footer class="footer"><span>TP LOGISTICALM</span><span>Aplicaciones Web Cliente · Proyecto educativo</span></footer>
-    </div>
-  </div>
+          <section
+            class="page-view"
+            data-page="despacho"
+            aria-labelledby="dispatch-title"
+            hidden
+          >
+            <header class="page-header">
+              <div>
+                <p class="eyebrow">ARMADO DE VIAJE</p>
+                <h1 id="dispatch-title" tabindex="-1">Despacho</h1>
+                <p class="page-header__text">
+                  Elegí un vehículo y asigná paquetes sin superar su capacidad.
+                </p>
+              </div>
+            </header>
+            <div class="dispatch-grid">
+              <section
+                class="panel-card"
+                aria-labelledby="vehicle-select-title"
+              >
+                <div class="panel-card__header">
+                  <div>
+                    <h2 id="vehicle-select-title">1. Seleccionar vehículo</h2>
+                    <p>La carga útil es PBV menos tara.</p>
+                  </div>
+                  <span class="step-number">01</span>
+                </div>
+                <label class="form-field"
+                  ><span>Vehículo</span
+                  ><select id="dispatch-vehicle" required></select
+                ></label>
+                <div id="vehicle-specs" class="vehicle-specs"></div>
+              </section>
+              <section class="panel-card" aria-labelledby="available-title">
+                <div class="panel-card__header">
+                  <div>
+                    <h2 id="available-title">2. Paquetes en depósito</h2>
+                    <p>Seleccioná una zona y paquetes con CPA.</p>
+                  </div>
+                  <span class="step-number">02</span>
+                </div>
+                <label class="form-field"
+                  ><span>Zona de reparto</span
+                  ><select id="dispatch-zone">
+                    <option value="CABA">Capital Federal (CABA)</option>
+                    <option value="GBA" selected>
+                      Gran Buenos Aires (GBA)
+                    </option>
+                    <option value="Interior">Interior</option>
+                  </select></label
+                >
+                <div class="dispatch-packages" id="dispatch-available"></div>
+              </section>
+            </div>
+            <section
+              class="panel-card capacity-card"
+              aria-labelledby="capacity-title"
+            >
+              <div class="panel-card__header">
+                <div>
+                  <h2 id="capacity-title">Capacidad del viaje</h2>
+                  <p>
+                    La carga actual y los paquetes elegidos se suman antes de
+                    confirmar.
+                  </p>
+                </div>
+                <span class="capacity-state" id="capacity-state"
+                  >Pendiente</span
+                >
+              </div>
+              <div class="capacity-grid">
+                <div class="capacity-meter">
+                  <div class="capacity-meter__heading">
+                    <span>Peso</span><span id="dispatch-weight-text">—</span>
+                  </div>
+                  <progress
+                    id="weight-progress"
+                    value="0"
+                    max="100"
+                    aria-label="Porcentaje de carga de peso"
+                  ></progress>
+                </div>
+                <div class="capacity-meter">
+                  <div class="capacity-meter__heading">
+                    <span>Volumen</span><span id="dispatch-volume-text">—</span>
+                  </div>
+                  <progress
+                    id="volume-progress"
+                    value="0"
+                    max="100"
+                    aria-label="Porcentaje de carga de volumen"
+                  ></progress>
+                </div>
+              </div>
+              <p class="capacity-message" id="capacity-message">
+                Elegí un vehículo y al menos un paquete.
+              </p>
+              <form id="dispatch-form">
+                <button
+                  class="button button--primary"
+                  id="create-trip"
+                  type="submit"
+                  disabled
+                >
+                  Crear viaje
+                </button>
+              </form>
+            </section>
+          </section>
 
-  <dialog class="dialog" id="package-dialog" aria-labelledby="package-dialog-title">
-    <form class="dialog__content" id="package-form">
-      <div class="dialog__header"><div><p class="eyebrow">RECEPCIÓN</p><h2 id="package-dialog-title">Registrar paquete</h2></div><button class="icon-button" type="button" data-close-dialog="package-dialog" aria-label="Cerrar">×</button></div>
-      <div class="form-grid">
-        <label class="form-field"><span>Remitente</span><input name="sender" required maxlength="80" placeholder="Nombre de quien envía"></label>
-        <label class="form-field"><span>Destinatario</span><input name="recipient" required maxlength="80" placeholder="Nombre de quien recibe"></label>
-        <label class="form-field"><span>Origen</span><input name="origin" required maxlength="80" placeholder="Ciudad de origen"></label>
-        <label class="form-field"><span>Destino</span><input name="destination" required maxlength="80" placeholder="Ciudad de destino"></label>
-        <label class="form-field form-field--wide"><span>Descripción</span><input name="description" required maxlength="100" placeholder="¿Qué contiene el paquete?"></label>
-        <label class="form-field"><span>Peso (kg)</span><input name="weightKg" type="number" min="0.1" step="0.1" required></label>
-        <fieldset class="dimensions-field form-field--wide"><legend>Medidas en metros</legend><div class="dimensions-grid"><label class="form-field"><span>Largo</span><input name="lengthM" type="number" min="0.01" step="0.01" required></label><label class="form-field"><span>Ancho</span><input name="widthM" type="number" min="0.01" step="0.01" required></label><label class="form-field"><span>Alto</span><input name="heightM" type="number" min="0.01" step="0.01" required></label></div></fieldset>
+          <section
+            class="page-view"
+            data-page="rutas"
+            aria-labelledby="routes-title"
+            hidden
+          >
+            <header class="page-header">
+              <div>
+                <p class="eyebrow">PLANIFICACIÓN DE REPARTO</p>
+                <h1 id="routes-title" tabindex="-1">Hojas de ruta</h1>
+                <p class="page-header__text">
+                  Paquetes asignados a cada unidad, agrupados por zona y
+                  ordenados por CPA.
+                </p>
+              </div>
+            </header>
+            <div class="orders-list" id="route-sheets"></div>
+          </section>
+
+          <section
+            class="page-view"
+            data-page="seguimiento"
+            aria-labelledby="tracking-title"
+            hidden
+          >
+            <header class="page-header">
+              <div>
+                <p class="eyebrow">CONSULTA DE ENVÍOS</p>
+                <h1 id="tracking-title" tabindex="-1">Seguimiento</h1>
+                <p class="page-header__text">
+                  Ingresá el código para ver el recorrido del paquete.
+                </p>
+              </div>
+            </header>
+            <section class="tracking-search panel-card">
+              <form id="tracking-form">
+                <label class="form-field"
+                  ><span>Código de seguimiento</span
+                  ><input
+                    id="tracking-code"
+                    name="codigo"
+                    type="search"
+                    placeholder="Ej.: TLS-261114-A001"
+                    autocomplete="off"
+                    required /></label
+                ><button class="button button--primary" type="submit">
+                  Consultar <span aria-hidden="true">→</span>
+                </button>
+              </form>
+              <p class="tracking-search__hint">
+                Probá con un código de la tabla de paquetes.
+              </p>
+            </section>
+            <div
+              id="tracking-result"
+              class="tracking-result"
+              aria-live="polite"
+              aria-atomic="true"
+            ></div>
+          </section>
+        </main>
+        <footer class="footer">
+          <span>TP LOGISTICALM</span
+          ><span>Aplicaciones Web Cliente · Proyecto educativo</span>
+        </footer>
       </div>
-      <p class="form-note">El volumen se calcula automáticamente: largo × ancho × alto.</p>
-      <div class="dialog__actions"><button class="button button--secondary" type="button" data-close-dialog="package-dialog">Cancelar</button><button class="button button--primary" type="submit">Guardar paquete</button></div>
-    </form>
-  </dialog>
-  <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
-</body>
+    </div>
+
+    <dialog
+      class="dialog"
+      id="package-dialog"
+      aria-labelledby="package-dialog-title"
+    >
+      <form class="dialog__content" id="package-form">
+        <div class="dialog__header">
+          <div>
+            <p class="eyebrow">RECEPCIÓN</p>
+            <h2 id="package-dialog-title">Registrar paquete</h2>
+          </div>
+          <button
+            class="icon-button"
+            type="button"
+            data-close-dialog="package-dialog"
+            aria-label="Cerrar"
+          >
+            ×
+          </button>
+        </div>
+        <div class="form-grid">
+          <label class="form-field"
+            ><span>Remitente</span
+            ><input
+              name="sender"
+              required
+              maxlength="80"
+              placeholder="Nombre de quien envía"
+          /></label>
+          <label class="form-field"
+            ><span>Destinatario</span
+            ><input
+              name="recipient"
+              required
+              maxlength="80"
+              placeholder="Nombre de quien recibe"
+          /></label>
+          <label class="form-field"
+            ><span>Origen</span
+            ><input
+              name="origin"
+              required
+              maxlength="80"
+              placeholder="Ciudad de origen"
+          /></label>
+          <label class="form-field"
+            ><span>Destino</span
+            ><input
+              name="destination"
+              required
+              maxlength="80"
+              placeholder="Ciudad de destino"
+          /></label>
+          <label class="form-field"
+            ><span>Zona de reparto</span
+            ><select name="zone" required>
+              <option value="CABA">Capital Federal (CABA)</option>
+              <option value="GBA">Gran Buenos Aires (GBA)</option>
+              <option value="Interior">Interior</option>
+            </select></label
+          >
+          <label class="form-field"
+            ><span>CPA (8 caracteres)</span
+            ><input
+              name="postalCode"
+              required
+              pattern="[A-Za-z][0-9]{4}[A-Za-z]{3}"
+              maxlength="8"
+              placeholder="Ej.: C1000ABC"
+              title="Ingresá un CPA alfanumérico de 8 caracteres"
+          /></label>
+          <label class="form-field form-field--wide"
+            ><span>Descripción</span
+            ><input
+              name="description"
+              required
+              maxlength="100"
+              placeholder="¿Qué contiene el paquete?"
+          /></label>
+          <label class="form-field"
+            ><span>Peso (kg)</span
+            ><input name="weightKg" type="number" min="0.1" step="0.1" required
+          /></label>
+          <fieldset class="dimensions-field form-field--wide">
+            <legend>Medidas en metros</legend>
+            <div class="dimensions-grid">
+              <label class="form-field"
+                ><span>Largo</span
+                ><input
+                  name="lengthM"
+                  type="number"
+                  min="0.01"
+                  step="0.01"
+                  required /></label
+              ><label class="form-field"
+                ><span>Ancho</span
+                ><input
+                  name="widthM"
+                  type="number"
+                  min="0.01"
+                  step="0.01"
+                  required /></label
+              ><label class="form-field"
+                ><span>Alto</span
+                ><input
+                  name="heightM"
+                  type="number"
+                  min="0.01"
+                  step="0.01"
+                  required
+              /></label>
+            </div>
+          </fieldset>
+        </div>
+        <p class="form-note">
+          El volumen se calcula automáticamente: largo × ancho × alto. El CPA
+          informa el destino postal; la zona se asigna por separado para
+          organizar el reparto.
+        </p>
+        <div class="dialog__actions">
+          <button
+            class="button button--secondary"
+            type="button"
+            data-close-dialog="package-dialog"
+          >
+            Cancelar</button
+          ><button class="button button--primary" type="submit">
+            Guardar paquete
+          </button>
+        </div>
+      </form>
+    </dialog>
+    <div
+      class="toast"
+      id="toast"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+    ></div>
+  </body>
 </html>
